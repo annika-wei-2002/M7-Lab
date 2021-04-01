@@ -17,7 +17,7 @@ public class StringTable {
     // number of records currently stored in table --
     // must be maintained by all operations
     //
-    public int size;
+    public int size; 
     
     
     //
