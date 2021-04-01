@@ -1,6 +1,7 @@
 package hash;
 
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 //
 // STRINGTABLE.JAVA
@@ -28,7 +29,10 @@ public class StringTable {
     	this.nBuckets = nBuckets;
     	buckets = new LinkedList[nBuckets];
 	
-    	// TODO - fill in the rest of this method to initialize your table
+    	for (int i = 0; i < nBuckets; i++) {
+    		buckets[i] = new LinkedList<Record>();
+    	}
+
     }
     
     
@@ -41,9 +45,35 @@ public class StringTable {
      */
     public boolean insert(Record r) 
     {  
-    	// TODO - implement this method
+    	String key = r.key;
+    	
+    	int hashCode = stringToHashCode(key);
+    	
+    	int index = toIndex(hashCode);
+    	
+    	LinkedList<Record> rBucket = buckets[index];
+    	
+    	if (rBucket.isEmpty() == true) {
+    		rBucket.add(r);
+    		size ++;
+    		return true;
+    	}
+    	
+    	ListIterator<Record> iterateThroughList = rBucket.listIterator();
+    	
+    	while (iterateThroughList.hasNext()) {
+    		
+    		Record recordInBucket = iterateThroughList.next();
+    		
+    		if (key.equals(recordInBucket.key)) {
+    			return false;
+    		}
+    		
+    	}
 	
-    	return false;
+    	rBucket.addLast(r);
+    	size++;
+    	return true;
     }
     
     
@@ -55,8 +85,28 @@ public class StringTable {
      */
     public Record find(String key) 
     {
-    	// TODO - implement this method
+    	int hashCode = stringToHashCode(key);
+    	
+    	int index = toIndex(hashCode);
+    	
+    	LinkedList<Record> rBucket = buckets[index];
+    	
+    	if (rBucket.isEmpty() == true) {
+    		return null;
+    	}
 	
+    	ListIterator<Record> iterateThroughList = rBucket.listIterator();
+    	
+    	while (iterateThroughList.hasNext()) {
+    		
+    		Record recordInBucket = iterateThroughList.next();
+    		
+    		if (key.equals(recordInBucket.key)) {
+    			return recordInBucket;
+    		}
+    	
+    	}
+    	
     	return null;
     }
     
@@ -69,7 +119,37 @@ public class StringTable {
      */
     public void remove(String key) 
     {
-    	// TODO - implement this method
+    	
+    	int hashCode = stringToHashCode(key);
+    	
+    	int index = toIndex(hashCode);
+    	
+    	LinkedList<Record> rBucket = buckets[index];
+    	
+    	if (rBucket.isEmpty() == false) {
+    		
+    		ListIterator<Record> iterateThroughList = rBucket.listIterator();
+        	
+        	while (iterateThroughList.hasNext()) {
+        		
+        		Record recordInBucket = iterateThroughList.next();
+        		
+        		if (key.equals(recordInBucket.key)) {
+        			
+        			rBucket.remove(recordInBucket);
+        			
+        			size--;
+        			
+        			break;
+        			
+        		}
+        		
+        		
+        	}
+    		
+    	}
+    	
+    	
     }
     
 
@@ -85,9 +165,13 @@ public class StringTable {
      */
     private int toIndex(int hashcode)
     {
-    	// Fill in your own hash function here
+    	
+    	// use the Golden Ratio: (sqrt(5)-1)/2
+    	double phi = (Math.sqrt(5)-1)/2;
+    	
+    	int index = Math.abs((int)(((hashcode * phi) % 1.0) * nBuckets));
 	
-    	return 0;
+    	return index;
     }
     
     
